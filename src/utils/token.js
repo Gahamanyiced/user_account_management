@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 
-dotenv.config({ path: './src/config/config.env' });
+dotenv.config({ path: '.env' });
 
 export const getToken = (id) => {
   const token = jwt.sign({ id }, process.env.JWT_KEY || 'loginTokenKey', {

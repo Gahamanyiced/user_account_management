@@ -2,7 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
 import morgan from 'morgan';
-import routes from './src/routers/index.js'
+import routes from './src/routers/index.js';
 import cloudinaryUpload from './src/utils/cloudinary.js';
 import cookieParser from 'cookie-parser';
 import mongoSanitize from 'express-mongo-sanitize';
@@ -18,7 +18,7 @@ import { connectDB } from './src/config/db.js';
 const app = express();
 
 //Load env vars
-dotenv.config({ path: './src/config/config.env' });
+dotenv.config({ path: '.env' });
 
 //connect to Database
 connectDB();
