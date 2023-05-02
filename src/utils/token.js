@@ -1,10 +1,10 @@
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 
-dotenv.config();
+dotenv.config({ path: './src/config/config.env' });
 
-export const getToken = (user) => {
-  const token = jwt.sign(user, process.env.JWT_KEY || 'loginTokenKey', {
+export const getToken = (id) => {
+  const token = jwt.sign({ id }, process.env.JWT_KEY || 'loginTokenKey', {
     expiresIn: process.env.JWT_EXPIRE || '30d',
   });
 

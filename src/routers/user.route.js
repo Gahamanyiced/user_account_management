@@ -1,9 +1,11 @@
 import express from 'express';
-import userController from '../controllers/user.controller.js';
 import { checkUserByEmail } from '../middleware/user.middleware.js';
-
+import authController from '../controllers/auth.controller.js';
 
 const router = express();
 
-// router.post('/register',checkUserByEmail,userController.signUp)
+router.post('/signup', checkUserByEmail, authController.signUp);
+
+router.post('/login', authController.login);
+
 export default router;

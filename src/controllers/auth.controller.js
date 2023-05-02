@@ -1,6 +1,8 @@
-import { matchPassword } from '../utils/comparePassword';
-import { hashPassword } from '../utils/password';
-import { getToken } from '../utils/token';
+import User from '../models/User.js';
+import { addUser } from '../services/user.service.js';
+import { hashPassword, matchPassword } from '../utils/password.js';
+import { getToken } from '../utils/token.js';
+
 export class AuthController {
   async signUp(req, res) {
     try {
@@ -20,6 +22,8 @@ export class AuthController {
       const { password: userPassword, ...userWithoutPassword } =
         user.toObject();
       return res.status(201).json({
+        success: true,
+        status: 201,
         message: 'user added successfully',
         data: { user: userWithoutPassword },
       });
@@ -32,8 +36,8 @@ export class AuthController {
   }
   async login(req, res) {
     try {
-      const { password } = req.body;
-      const foundUser = req.user;
+      const { email, password } = req.body;
+      const foundUser = await User.findOne({ email }).select('+password');
       if (!foundUser) {
         return res.status(401).json({
           message: 'Invalid credentials',
@@ -45,10 +49,8 @@ export class AuthController {
           message: 'Invalid credentials',
         });
       }
-      id = foundUser._id;
-      role = foundUser.role;
-      const token = getToken({ id, role });
-
+      const id = foundUser._id;
+      const token = getToken(id);      
       const options = {
         expires: new Date(
           Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000
@@ -62,7 +64,7 @@ export class AuthController {
       res.status(200).cookie('token', token, options).json({
         success: true,
         status: 200,
-        data: { foundUser, token },
+        data: { token },
       });
     } catch (error) {
       return res.status(500).json({
