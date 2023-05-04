@@ -62,9 +62,19 @@ export const forgotPasswordValidation = async (req, res, next) => {
   }
 };
 export const resetPasswordValidation = async (req, res, next) => {
+  const passwordComplexity =
+    /^(?=.*\d)(?=.*[!@#$%^&*()_+}{"':;?\/>.<,])(?=.*[A-Z])/;
   const userSchema = joi
     .object({
-      password: joi.string().min(8).required(),
+      password: joi
+        .string()
+        .min(8)
+        .pattern(passwordComplexity)
+        .required()
+        .messages({
+          'string.pattern.base':
+            'Password must contain at least one number, one special character, and one uppercase letter',
+        }),
     })
     .options({ allowUnknown: true });
 

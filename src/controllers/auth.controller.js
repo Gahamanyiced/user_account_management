@@ -2,12 +2,14 @@ import User from '../models/User.js';
 import { addUser, updateUserService } from '../services/user.service.js';
 import { generateOtp } from '../utils/otp.js';
 import { hashPassword, matchPassword } from '../utils/password.js';
+import sendEmail from '../utils/sendEmail.js';
 import { getToken } from '../utils/token.js';
+import crypto from 'crypto';
 
 export class AuthController {
   async signUp(req, res) {
     try {
-      const { password, ...rest } = req.body;
+      const { password, email, ...rest } = req.body;
       const foundUser = req.user;
       if (foundUser) {
         return res.status(409).json({
@@ -15,13 +17,25 @@ export class AuthController {
         });
       }
       const hashedPassword = await hashPassword(password);
+      const message = `You requested to reset password.Please make a PATCH request to: \n\n https://user_account/login`;
+
+      await sendEmail(
+        {
+          email: email,
+          subject: 'Login Link',
+          message,
+        },
+        res
+      );
       const newUser = {
         ...rest,
         password: hashedPassword,
       };
+
       const user = await addUser(newUser);
       const { password: userPassword, ...userWithoutPassword } =
         user.toObject();
+
       return res.status(201).json({
         success: true,
         status: 201,
@@ -113,6 +127,65 @@ export class AuthController {
     res.status(200).json({
       message: 'Logout successfully',
     });
+  }
+  async forgotPassword(req, res) {
+    try {
+      const foundUser = req.user;
+      const resetToken = req.resetToken;
+      const message = `You requested to reset password.Please make a PATCH request to: \n\n https://user/resetpassword/${resetToken}`;
+      await sendEmail({
+        email: foundUser.email,
+        subject: 'Password reset token',
+        message,
+      });
+      res.status(200).json({
+        success: true,
+        status: 200,
+        message: 'Email sent',
+      });
+    } catch (error) {
+      foundUser.resetPasswordToken = undefined;
+      foundUser.resetPasswordExpire = undefined;
+      await foundUser.save();
+      return res.status(500).json({
+        message: 'Unable to forgot password',
+        error: err.message,
+      });
+    }
+  }
+  async resetPassword(req, res, next) {
+    try {
+      const resetPasswordToken = crypto
+        .createHash('sha256')
+        .update(req.params.resettoken)
+        .digest('hex');
+      const foundUser = await User.findOne({
+        resetPasswordExpire: { $gt: Date.now() },
+        resetPasswordToken,
+      });
+      if (!foundUser) {
+        return res.status(400).json({
+          message: 'Invalid token',
+        });
+      }
+      const hashedPassword = await hashPassword(req.body.password);
+      foundUser.password = hashedPassword;
+      foundUser.resetPasswordToken = undefined;
+      foundUser.resetPasswordExpire = undefined;
+      const userSave = await foundUser.save();
+      console.log('userSave', userSave);
+      res.status(200).json({
+        success: true,
+        status: 200,
+        message: 'reset password done successfully',
+      });
+    } catch (error) {
+      res.status(500).json({
+        status: 500,
+        message: 'unable to reset password',
+        error: error.message,
+      });
+    }
   }
 }
 const authController = new AuthController();
