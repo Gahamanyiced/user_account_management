@@ -18,7 +18,7 @@ import { connectDB } from './src/config/db.js';
 const app = express();
 
 //Load env vars
-dotenv.config({ path: '.env' });
+// dotenv.config();
 
 //connect to Database
 connectDB();

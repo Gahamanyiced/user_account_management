@@ -1,12 +1,13 @@
 import User from '../models/User.js';
 
-export const checkUserByEmail = async (req, res, next) => {
+export const checkUserExistByEmail = async (req, res, next) => {
   try {
     const { email } = req.body;
     const foundUser = await User.findOne({
       email,
       isActive: true,
     });
+
     req.user = foundUser;
     next();
   } catch (error) {
