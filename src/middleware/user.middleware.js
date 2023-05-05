@@ -7,7 +7,7 @@ export const checkUserExistByEmail = async (req, res, next) => {
       email,
       isActive: true,
     });
-
+    console.log('foundUser',foundUser);
     req.user = foundUser;
     next();
   } catch (error) {

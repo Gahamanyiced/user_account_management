@@ -20,7 +20,7 @@ router
   .route('/signup')
   .post(signUpValidation, checkUserExistByEmail, authController.signUp);
 
-router.route('/login').post(loginValidation, authController.login);
+router.route('/login').post(loginValidation,checkUserExistByEmail, authController.login);
 
 router.route('/logout').get(authController.logout);
 

@@ -17,6 +17,7 @@ export const protect = async (req, res, next) => {
     });
   }
   try {
+    console.log(token);
     const decoded = await decoding(token);
     req.user = await getUserById(decoded.id);
     next();
@@ -79,6 +80,7 @@ export const generateResetToken = async (req, res, next) => {
 export const checkUserExist = async (req, res, next) => {
   try {
     const { email } = req.body;
+    
     const foundUser = await User.findOne({
       email,
       isActive: true,

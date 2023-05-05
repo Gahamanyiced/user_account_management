@@ -11,6 +11,7 @@ export class AuthController {
     try {
       const { password, email, ...rest } = req.body;
       const foundUser = req.user;
+      console.log(foundUser);
       if (foundUser) {
         return res.status(409).json({
           message: 'User already exists',
@@ -30,6 +31,7 @@ export class AuthController {
       const newUser = {
         ...rest,
         password: hashedPassword,
+        email,
       };
 
       const user = await addUser(newUser);
@@ -67,9 +69,16 @@ export class AuthController {
       }
       const id = foundUser._id;
       const otp = parseInt(generateOtp(6));
-
       await User.findByIdAndUpdate(id, { otp }, { new: true });
-
+      const message = `Your Verification OTP is: ${otp}  \n\n Use this link to be verified:  https://user_account/login`;
+      await sendEmail(
+        {
+          email: foundUser.email,
+          subject: 'Verify OTP',
+          message,
+        },
+        res
+      );
       res.status(200).json({
         success: true,
         status: 200,
@@ -172,8 +181,7 @@ export class AuthController {
       foundUser.password = hashedPassword;
       foundUser.resetPasswordToken = undefined;
       foundUser.resetPasswordExpire = undefined;
-      const userSave = await foundUser.save();
-      console.log('userSave', userSave);
+      await foundUser.save();
       res.status(200).json({
         success: true,
         status: 200,
