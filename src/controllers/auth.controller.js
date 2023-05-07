@@ -10,8 +10,7 @@ export class AuthController {
   async signUp(req, res) {
     try {
       const { password, email, ...rest } = req.body;
-      const foundUser = req.user;
-      console.log(foundUser);
+      const foundUser = req.user;      
       if (foundUser) {
         return res.status(409).json({
           message: 'User already exists',

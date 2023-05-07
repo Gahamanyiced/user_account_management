@@ -1,9 +1,11 @@
-import {  
+import {
   getUserById,
   getAllUsers,
   updateUserService,
   softDeleteUserService,
 } from '../services/user.service.js';
+import cloudinary from 'cloudinary';
+import User from '../models/User.js';
 export class UserController {
   async getAllUsers(req, res) {
     try {
@@ -25,6 +27,7 @@ export class UserController {
   async getUser(req, res) {
     try {
       const user = await getUserById(req.params.id);
+
       return res.status(200).json({
         success: true,
         status: 200,
@@ -40,14 +43,34 @@ export class UserController {
   }
   async updateUser(req, res) {
     try {
-      const user = req.user;
-      await updateUserService(req.body, user.id);
-      return res.status(200).json({
-        success: true,
-        status: 200,
-        message: 'User updated successfully',
-        data: { id: user.id, ...req.body },
-      });
+      if (req.results) {
+        const imageFile = req.results;
+        await updateUserService(
+          { photo: imageFile.secure_url, ...req.body },
+          req.params.id
+        );
+        return res.status(200).json({
+          success: true,
+          status: 200,
+          message: 'User updated successfully',
+          data: {
+            id: req.params.id,
+            profileImage: imageFile.secure_url,
+            ...req.body,
+          },
+        });
+      } else {
+        await updateUserService(req.body, req.params.id);
+        return res.status(200).json({
+          success: true,
+          status: 200,
+          message: 'User updated successfully',
+          data: {
+            id: req.params.id,
+            ...req.body,
+          },
+        });
+      }
     } catch (error) {
       return res.status(500).json({
         message: 'Unable to update user',
@@ -55,10 +78,46 @@ export class UserController {
       });
     }
   }
+  async updateUserIdentifierInfo(req, res) {
+    try {
+      if (req.results) {
+        const imageFile = req.results;
+        await updateUserService(
+          { documentImage: imageFile.secure_url, ...req.body },
+          req.params.id
+        );
+        return res.status(200).json({
+          success: true,
+          status: 200,
+          message: 'User identifier information updated successfully',
+          data: {
+            id: req.params.id,
+            documentImage: imageFile.secure_url,
+            ...req.body,
+          },
+        });
+      } else {
+        await updateUserService(req.body, req.params.id);
+        return res.status(200).json({
+          success: true,
+          status: 200,
+          message: 'User identifier information updated successfully',
+          data: {
+            id: req.params.id,
+            ...req.body,
+          },
+        });
+      }
+    } catch (error) {
+      return res.status(500).json({
+        message: 'Unable to update user identifier information',
+        error: error.message,
+      });
+    }
+  }
   async softDeleteUser(req, res) {
     try {
-      const user = req.user;
-      await softDeleteUserService(user.id);
+      await softDeleteUserService(req.params.id);
       return res.status(200).json({
         success: true,
         status: 200,
