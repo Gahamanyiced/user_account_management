@@ -1,4 +1,4 @@
-# user_account_management
+# user_account_management backend
 Management of User Account 
 
 # Installation 
@@ -16,5 +16,11 @@ $ npm run dev
 # production 
 $ npm run start
 ```
+# Test the app
+
+```bash
+$ npm run test
+```
+
 
 
