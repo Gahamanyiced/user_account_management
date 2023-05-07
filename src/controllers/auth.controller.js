@@ -17,8 +17,15 @@ export class AuthController {
         });
       }
       const hashedPassword = await hashPassword(password);
-      const message = `You requested to reset password.Please make a PATCH request to: \n\n https://user_account/login`;
-
+      const newUser = {
+        ...rest,
+        password: hashedPassword,
+        email,
+      };
+      const user = await addUser(newUser);
+      const { password: userPassword, ...userWithoutPassword } =
+        user.toObject();
+      const message = `You have been successfully registered.Please Login using the link provide below: \n\n https://user_account/login`;
       await sendEmail(
         {
           email: email,
@@ -27,16 +34,6 @@ export class AuthController {
         },
         res
       );
-      const newUser = {
-        ...rest,
-        password: hashedPassword,
-        email,
-      };
-
-      const user = await addUser(newUser);
-      const { password: userPassword, ...userWithoutPassword } =
-        user.toObject();
-
       return res.status(201).json({
         success: true,
         status: 201,

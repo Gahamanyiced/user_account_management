@@ -70,3 +70,4 @@ app.listen(
 //   // close server & exit process
 //   server.close(() => process.exit(1));
 // });
+export default app;

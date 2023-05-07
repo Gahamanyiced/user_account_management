@@ -4,8 +4,6 @@ import {
   updateUserService,
   softDeleteUserService,
 } from '../services/user.service.js';
-import cloudinary from 'cloudinary';
-import User from '../models/User.js';
 export class UserController {
   async getAllUsers(req, res) {
     try {
