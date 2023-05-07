@@ -10,7 +10,7 @@ export class AuthController {
   async signUp(req, res) {
     try {
       const { password, email, ...rest } = req.body;
-      const foundUser = req.user;      
+      const foundUser = req.user;
       if (foundUser) {
         return res.status(409).json({
           message: 'User already exists',
@@ -119,7 +119,8 @@ export class AuthController {
       res.status(200).cookie('token', token, options).json({
         success: true,
         status: 200,
-        data: { token },
+
+        data: { foundUser, token },
       });
     } catch (error) {
       return res.status(500).json({
