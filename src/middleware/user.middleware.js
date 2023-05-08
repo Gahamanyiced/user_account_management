@@ -8,7 +8,7 @@ export const checkUserExistByEmail = async (req, res, next) => {
       email,
       isActive: true,
     });
-    
+
     req.user = foundUser;
     next();
   } catch (error) {
@@ -34,23 +34,4 @@ export const checkUploadImageFile = async (req, res, next) => {
   } else {
     next();
   }
-};
-
-export const checkUploadImageFileFormat = (...extensions) => {
-  return (req, res, next) => {
-    if (req.results) {
-      const results = req.results;
-      console.log(results);
-      if (!extensions.includes(results.format)) {
-        return res.status(405).json({
-          message: `Only ${extensions} format is allowed`,
-        });
-      } else {
-        req.results = results;
-        next();
-      }
-    } else {
-      next();
-    }
-  };
 };
