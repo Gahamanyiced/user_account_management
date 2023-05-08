@@ -25,7 +25,7 @@ export class AuthController {
       const user = await addUser(newUser);
       const { password: userPassword, ...userWithoutPassword } =
         user.toObject();
-      const message = `You have been successfully registered.Please Login using the link provide below: \n\n https://user_account/login`;
+      const message = `You have been successfully registered.Please Login using the link provide below: \n\n https://user-account-management-frontend-theta.vercel.app/login`;
       await sendEmail(
         {
           email: email,
@@ -66,7 +66,7 @@ export class AuthController {
       const id = foundUser._id;
       const otp = parseInt(generateOtp(6));
       await User.findByIdAndUpdate(id, { otp }, { new: true });
-      const message = `Your Verification OTP is: ${otp}  \n\n Use this link to be verified:  https://user_account/login`;
+      const message = `Your Verification OTP is: ${otp}  \n\n Use this link to be verified:  https://user-account-management-frontend-theta.vercel.app/otp`;
       await sendEmail(
         {
           email: foundUser.email,
@@ -138,7 +138,7 @@ export class AuthController {
     try {
       const foundUser = req.user;
       const resetToken = req.resetToken;
-      const message = `You requested to reset password.Please make a PATCH request to: \n\n https://user/resetpassword/${resetToken}`;
+      const message = `You requested to reset password.Please reset password using this link: \n\n https://user-account-management-frontend-theta.vercel.app/resetpassword/${resetToken}`;
       await sendEmail({
         email: foundUser.email,
         subject: 'Password reset token',
