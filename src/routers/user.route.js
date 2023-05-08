@@ -12,14 +12,14 @@ router
 router
   .route('/:id')
   .get(protect, authorize('admin', 'user'), userController.getUser)
-  .patch(protect, authorize('admin', 'user'),checkUploadImageFile,checkUploadImageFileFormat('jpg','png'), userController.updateUser)
+  .patch(protect, authorize('admin', 'user'),checkUploadImageFile,checkUploadImageFileFormat('jpg','jpeg','png'), userController.updateUser)
   .delete(protect, authorize('admin', 'user'), userController.softDeleteUser);
 
 router
   .route('/identifier-info/:id')
   .patch(
     protect,
-    authorize('admin', 'user'),checkUploadImageFile,checkUploadImageFileFormat('jpg','png'),
+    authorize('admin', 'user'),checkUploadImageFile,checkUploadImageFileFormat('jpg','jpeg','png'),
     userController.updateUserIdentifierInfo
   );
 

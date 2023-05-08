@@ -40,7 +40,8 @@ export const checkUploadImageFileFormat = (...extensions) => {
   return (req, res, next) => {
     if (req.results) {
       const results = req.results;
-      if (!extensions.includes(results.format.toLowerCase())) {
+      console.log(results);
+      if (!extensions.includes(results.format)) {
         return res.status(405).json({
           message: `Only ${extensions} format is allowed`,
         });
